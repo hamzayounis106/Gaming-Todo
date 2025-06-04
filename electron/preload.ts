@@ -7,4 +7,16 @@ contextBridge.exposeInMainWorld('electronAPI', {
   maximizeWindow: () => ipcRenderer.invoke('window-maximize'),
   closeWindow: () => ipcRenderer.invoke('window-close'),
   isMaximized: () => ipcRenderer.invoke('window-is-maximized'),
+  showNotification: (title: string, body: string) => ipcRenderer.invoke('show-notification', title, body),
+  
+  // Listen for tray menu events
+  onFocusAddTodo: (callback: () => void) => {
+    ipcRenderer.on('focus-add-todo', callback);
+    return () => ipcRenderer.removeListener('focus-add-todo', callback);
+  },
+  
+  onOpenSettings: (callback: () => void) => {
+    ipcRenderer.on('open-settings', callback);
+    return () => ipcRenderer.removeListener('open-settings', callback);
+  }
 });

@@ -14,7 +14,12 @@
     "preview": "vite preview",
     "electron": "electron .",
     "pack": "electron-builder",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:portable": "npm run build && electron-builder --win portable",
+    "dist:all": "npm run build && electron-builder --win --mac --linux",
+    "clean": "rimraf dist dist-electron release",
+    "rebuild": "npm run clean && npm install"
   },
   "keywords": [
     "electron",
@@ -35,7 +40,10 @@
     "cross-env": "^7.0.3",
     "electron": "^28.1.0",
     "electron-builder": "^24.9.1",
+    "electron-icon-builder": "^2.0.1",
     "postcss": "^8.4.32",
+    "rimraf": "^5.0.5",
+    "sharp": "^0.34.2",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2",
     "vite": "^5.0.8",
@@ -47,24 +55,99 @@
     "react-dom": "^18.2.0"
   },
   "build": {
-    "appId": "com.yourcompany.gaming-todo",
+    "appId": "com.gamingtodo.app",
     "productName": "Gaming ToDo",
+    "copyright": "Copyright © 2025 Gaming ToDo",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
-      "package.json"
+      "package.json",
+      "node_modules/**/*"
     ],
-    "mac": {
-      "category": "public.app-category.productivity"
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "publisherName": "Gaming ToDo Studio",
+      "verifyUpdateCodeSignature": false,
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": false,
+      "signDlls": false
     },
-    "win": {
-      "target": "nsis"
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Gaming ToDo",
+      "runAfterFinish": true,
+      "artifactName": "Gaming-ToDo-Setup-${version}.${ext}",
+      "deleteAppDataOnUninstall": false
+    },
+    "portable": {
+      "artifactName": "Gaming-ToDo-Portable-${version}.${ext}"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "linux": {
-      "target": "AppImage"
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.png",
+      "category": "Office"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "yourusername",
+      "repo": "gaming-todo-electron"
     }
   }
 }
